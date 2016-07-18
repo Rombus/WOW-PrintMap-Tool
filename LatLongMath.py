@@ -2,25 +2,23 @@
 #
 # A collection of methods to support generating coordinate sets for PrintMapTool
 # outputs are DMS for use in Google Maps
-# Note: GeoJOSN Hacks are noted as such
+# Note: GeoJSON uses a Long/Lat Format! All returns are given in Long/Lat format
 #
 # Assumptions:
 # * We try to start in the upper left corner of and then work left to right top to bottom
 # * Tool is only going to be used in North West Hemisphere (North America)
 #   This means Postive Latitude (North) And negative logitude (West)
 #
+#
 # Converstion Forumla:
-# http://stackoverflow.com/questions/1253499/simple-calculations-for-working-with-lat-lon-km-distance
-# Another example : http://www.movable-type.co.uk/scripts/latlong.html (Using in test code)
+# http://www.movable-type.co.uk/scripts/latlong.html
 #
 
 import math
 
 # Constants
 ftToKM = 0.0003048
-kmToLat = (1/110.574)
-kmToLong = 111.320  # NOTE: Needs to be 1/(111.320*cos(latitude)) to be accurate
-earthRadius = float(6371)
+earthRadius = float(6371) # Per https://en.wikipedia.org/wiki/Earth_radius
 
 
 def UserInputPrintCoords():
@@ -43,7 +41,8 @@ def UserInputPrintCoords():
     print(output [3])
 
 def PrintCoords(ulLat, ulLong, width, height):
-    """Returns an Array of Coordinate Arrays  that form a box starting at a upper left coordinate of a given size
+    """Returns an Array of Coordinate Arrays  that form a box starting
+    at a upper left coordinate of a given size
 
     Keyword Arguments:
     ulLat -- The Upper Left corner Latitude
@@ -51,14 +50,6 @@ def PrintCoords(ulLat, ulLong, width, height):
     Width -- The width of the map (in Feet)
     Height -- The height of the map (in Feet)
     """
-    # convert from Feet to Kilometers
-    deltaKMLong = width * ftToKM
-    deltaKMLat = round(height * ftToKM,6)
-
-    # Convert from Kilometers to Lat/Long changes
-    deltaLong = (1/(kmToLong*math.cos(math.radians(ulLat)))) * deltaKMLong
-    deltaLat = deltaKMLat * kmToLat
-
     # Corner Coordinates, GeoJSON requires Long/Lat Notation
     ulCorner = [ulLong, ulLat]
     urCorner = [(deltaLong+ulLong), ulLat]
@@ -105,10 +96,10 @@ def FindOrginNew(givenLat, givenLong, shiftInLat, shiftInLong):
     # shift Up Second
     upShift = BearingDistanceTest(leftShift[0], leftShift[1] , 0, shiftInLong)
 
-    return upShift # Note: Right now were returning inn Lat/Long format
+    return upShift
 
 
-def BearingDistanceTest(givenLat, givenLong, bearing, distance):
+def BearingDistance(givenLat, givenLong, bearing, distance):
     """Returns a Coordinate Array for a given bearing and distance away from
        the given lat and long
 
@@ -117,6 +108,9 @@ def BearingDistanceTest(givenLat, givenLong, bearing, distance):
     givenLong -- The Longitude to start From
     bearing -- the bearing to move the point (In Degrees)
     distance -- the distance to move the point (In Feet)
+
+    Return:
+    Coordinate Array in Long/Lat format
     """
 
     # Degree to Radian conversions
@@ -128,10 +122,10 @@ def BearingDistanceTest(givenLat, givenLong, bearing, distance):
     kmDistance = distance * ftToKM
     angularDist = kmDistance/earthRadius
 
-    lat2 = math.asin(math.sin((radLat) * math.cos(angularDist)) + (math.cos(radLat) * math.sin(angularDist) * math.cos(radbear)))
-    long2 = radLong + math.atan2(math.sin(radbear)*math.sin(angularDist)*math.cos(radLat), math.cos(angularDist)-math.sin(radLat)*math.sin(lat2))
+    endLat = math.asin(math.sin((radLat) * math.cos(angularDist)) + (math.cos(radLat) * math.sin(angularDist) * math.cos(radbear)))
+    endLong = radLong + math.atan2(math.sin(radbear)*math.sin(angularDist)*math.cos(radLat), math.cos(angularDist)-math.sin(radLat)*math.sin(endLat))
 
-    return [math.degrees(lat2), math.degrees(long2)]
+    return [math.degrees(endLong), math.degrees(endLat)]
 
-print(BearingDistanceTest(32.384696,-86.135105,90,3000))
-print(BearingDistanceTest(32.384696,-86.135105,180,2000))
+print(BearingDistance(32.384696, -86.135105, 90, 3000))
+print(BearingDistance(32.384696, -86.135105, 180, 2000))
