@@ -1,0 +1,16 @@
+32.367159, -86.244978
+
+If my math is correct:
+
+32.375988 -86.244978 should be 3000 feet away
+32.367159, -86.239501
+
+^^^^^^^^^^^^^^^^^^ 1/25/15 work above this ^^^^^^^^^^^^^^^6
+
+The above values are incorrect, i have Lat and long swapped, and im short by about 300'
+
+East West = Width = X = Change in Longitude
+North South = Height = Y = Change in Latitude
+
+
+

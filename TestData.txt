@@ -1,0 +1,19 @@
+What is the lowest map row number: 26
+What is the highest map row number: 74
+How many steps between each row: 2
+What is the lowest map column number: 29
+What is the highest map column number: 77
+how many steps between each column: 2
+What map location is the base Lat Long: 4435
+What is the Latitude for the known upper left corner of print 4435 :32.348738
+What is the Longitude for the known upper left corner of print 4435 :-86.361760
+How wide (in feet) is each print: 3000
+How long (in feet) is each print: 2000
+3.0
+15.0
+2000
+3000
+9000
+30000
+[32.431433751261594, -86.39092935174413]
+625
