@@ -58,28 +58,8 @@ def PrintCoords(ulLat, ulLong, width, height):
 
     return [ulCorner,urCorner,lrCorner,llCorner,ulCorner] #GeoJSON requires a polygon to end on the same part
 
-def FindOrgin(givenLat,givenLong,shiftInLat,shiftInLong):
-    """Returns a Coordinate Array of the upper left corner of the map
 
-    Keyword Arguments:
-    givenLat -- The Latitude to start from
-    givenLong -- The Longitude to start From
-    shiftInLat --  The ammount (in feet) to shift the latitude Left
-    shiftinLong -- The ammount (in feet) to shift the longitued Up
-    """
-
-    # convert from Feet to Kilometers
-    deltaKMLong = shiftInLong * ftToKM
-    deltaKMLat = shiftInLat * ftToKM
-
-    # Convert from Kilometers to Lat/Long changes
-    deltaLong = (1/(kmToLong*math.cos(math.radians(givenLat)))) * deltaKMLong
-    deltaLat = deltaKMLat * kmToLat
-
-    return [givenLong-deltaLong, givenLat+deltaLat] #GeoJSON requires long/lat format
-
-
-def FindOrginNew(givenLat, givenLong, shiftInLat, shiftInLong):
+def FindOrgin(givenLat, givenLong, shiftInLat, shiftInLong):
     """Returns a Coordinate Array of the upper left corner of the map
         Uses Bearing Method
 
@@ -126,6 +106,3 @@ def BearingDistance(givenLat, givenLong, bearing, distance):
     endLong = radLong + math.atan2(math.sin(radbear)*math.sin(angularDist)*math.cos(radLat), math.cos(angularDist)-math.sin(radLat)*math.sin(endLat))
 
     return [math.degrees(endLong), math.degrees(endLat)]
-
-print(BearingDistance(32.384696, -86.135105, 90, 3000))
-print(BearingDistance(32.384696, -86.135105, 180, 2000))
