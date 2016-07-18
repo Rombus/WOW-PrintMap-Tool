@@ -20,43 +20,31 @@ import math
 ftToKM = 0.0003048
 earthRadius = float(6371) # Per https://en.wikipedia.org/wiki/Earth_radius
 
+def generateGridMatrix(givenLong, givenLat, Rows, Columns):
+    """ Generates a matrix Coordinate Arrays for a given number of rows
+        and columns. Each point refers to one corner of a given print.
 
-def UserInputPrintCoords():
-    """ User Input interface to PrintCoords() for testing
+        Assumes a latitude change of 3000 feet and a longitude change of 2000 feet
+
+        Keyword Arguments:
+        givenLong - the longituded to start the grid at (Upper Left Corner)
+        givenLat - The latitude to start the grid at (Upper Left Corner)
+        Rows - Number of rows needed
+        Columns - Number of columns needed
     """
-    deltaFTLong = int(input("How many feet in width is each map segment? "))
-    deltaFTLat = int(input("How many feet in length is each map segment? "))
-    givenLat = float(input("What is your starting Latitude? "))
-    givenLong = float(input("What is your starting Longitude? "))
 
-    output = PrintCoords(givenLat, givenLong, deltaFTLong, deltaFTLat)
+    # Initzalize the Matrix
+    gridOutput = [[0 for x in range(Columns + 1)] for y in range(Rows + 1)] 
 
-    print("Top Left corner of box should be")
-    print(output[0])
-    print("Top Right corner of box Should be")
-    print(output[1])
-    print("Bottom Left CornLer of Box should be")
-    print(output [2])
-    print("Bottom Right corner of box should be")
-    print(output [3])
+    currentRowPoint = [givenLong, givenLat]
+    for R in Rows:
+        currentColumnPoint = currentRowPoint
+        for C in Columns:
+            gridOutput[R][C] = currentColumnPoint
+            currentColumnPoint = BearingDistance(currentColumnPoint[1], currentColumnPoint[0], 90, 3000)
+        currentRowPoint = BearingDistance(currentRowPoint[1], currentRowPoint[0], 180, 2000)
 
-def PrintCoords(ulLat, ulLong, width, height):
-    """Returns an Array of Coordinate Arrays  that form a box starting
-    at a upper left coordinate of a given size
-
-    Keyword Arguments:
-    ulLat -- The Upper Left corner Latitude
-    ulLong -- The Upper Left Corner Longitude
-    Width -- The width of the map (in Feet)
-    Height -- The height of the map (in Feet)
-    """
-    # Corner Coordinates, GeoJSON requires Long/Lat Notation
-    ulCorner = [ulLong, ulLat]
-    urCorner = [(deltaLong+ulLong), ulLat]
-    llCorner = [ulLong, (ulLat - deltaLat)]
-    lrCorner = [(deltaLong + ulLong), (ulLat - deltaLat)]
-
-    return [ulCorner,urCorner,lrCorner,llCorner,ulCorner] #GeoJSON requires a polygon to end on the same part
+    return gridOutput
 
 
 def FindOrgin(givenLat, givenLong, shiftInLat, shiftInLong):
@@ -71,10 +59,10 @@ def FindOrgin(givenLat, givenLong, shiftInLat, shiftInLong):
     """
 
     # Shift Left First
-    leftShift = BearingDistanceTest(givenLat, givenLong, 270, shiftInLat)
+    leftShift = BearingDistance(givenLat, givenLong, 270, shiftInLat)
 
     # shift Up Second
-    upShift = BearingDistanceTest(leftShift[0], leftShift[1] , 0, shiftInLong)
+    upShift = BearingDistance(leftShift[0], leftShift[1] , 0, shiftInLong)
 
     return upShift
 
