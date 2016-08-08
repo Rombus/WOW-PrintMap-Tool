@@ -13,4 +13,5 @@ East West = Width = X = Change in Longitude
 North South = Height = Y = Change in Latitude
 
 
-
+        mapDictionary[repr(rowValues[R])+repr(colValues[C])] = thisBox
+        This line sucked after changing to the grid representation

@@ -7,10 +7,10 @@
 # Assumptions:
 # * We try to start in the upper left corner of and then work left to right top to bottom
 # * Tool is only going to be used in North West Hemisphere (North America)
-#   This means Postive Latitude (North) And negative logitude (West)
+#   This means Positive Latitude (North) And negative longitude (West)
 #
 #
-# Converstion Forumla:
+# Conversion Formula:
 # http://www.movable-type.co.uk/scripts/latlong.html
 #
 
@@ -20,60 +20,61 @@ import math
 ftToKM = 0.0003048
 earthRadius = float(6371) # Per https://en.wikipedia.org/wiki/Earth_radius
 
-def generateGridMatrix(givenLong, givenLat, Rows, Columns):
+
+def generateGridMatrix(longLat, Rows, Columns, shiftInLong, ShiftinLat):
     """ Generates a matrix Coordinate Arrays for a given number of rows
         and columns. Each point refers to one corner of a given print.
 
         Assumes a latitude change of 3000 feet and a longitude change of 2000 feet
 
         Keyword Arguments:
-        givenLong - the longituded to start the grid at (Upper Left Corner)
-        givenLat - The latitude to start the grid at (Upper Left Corner)
+        longLat -- The starting point in long/lat format
         Rows - Number of rows needed
         Columns - Number of columns needed
     """
+    # Add one to make sure we account for last row and column values
+    Rows += 1
+    Columns += 1
 
-    # Initzalize the Matrix
-    gridOutput = [[0 for x in range(Columns + 1)] for y in range(Rows + 1)] 
+    # Initialize the Matrix
+    gridOutput = [[0 for x in range(Columns)] for y in range(Rows)] 
 
-    currentRowPoint = [givenLong, givenLat]
-    for R in Rows:
+    currentRowPoint = longLat
+    for R in range(Rows):
         currentColumnPoint = currentRowPoint
-        for C in Columns:
+        for C in range(Columns):
             gridOutput[R][C] = currentColumnPoint
-            currentColumnPoint = BearingDistance(currentColumnPoint[1], currentColumnPoint[0], 90, 3000)
-        currentRowPoint = BearingDistance(currentRowPoint[1], currentRowPoint[0], 180, 2000)
+            currentColumnPoint = BearingDistance(currentColumnPoint, 90, ShiftinLat)
+        currentRowPoint = BearingDistance(currentRowPoint, 180, shiftInLong)
 
     return gridOutput
 
 
-def FindOrgin(givenLat, givenLong, shiftInLat, shiftInLong):
+def FindOrigin(longLat, shiftInLong, shiftInLat):
     """Returns a Coordinate Array of the upper left corner of the map
         Uses Bearing Method
 
     Keyword Arguments:
-    givenLat -- The Latitude to start from
-    givenLong -- The Longitude to start From
-    shiftInLat --  The ammount (in feet) to shift the latitude Left
-    shiftinLong -- The ammount (in feet) to shift the longitued Up
+    longLat -- The starting point in long/lat format
+    shiftInLat --  The amount (in feet) to shift the latitude Left
+    shiftinLong -- The amount (in feet) to shift the longitude Up
     """
 
     # Shift Left First
-    leftShift = BearingDistance(givenLat, givenLong, 270, shiftInLat)
-
+    leftShift = BearingDistance(longLat, 270, shiftInLat)
+    print(leftShift)
     # shift Up Second
-    upShift = BearingDistance(leftShift[0], leftShift[1] , 0, shiftInLong)
+    upShift = BearingDistance(leftShift, 0, shiftInLong)
 
     return upShift
 
 
-def BearingDistance(givenLat, givenLong, bearing, distance):
+def BearingDistance(longLat, bearing, distance):
     """Returns a Coordinate Array for a given bearing and distance away from
        the given lat and long
 
     Keyword Arguments:
-    givenLat -- The Latitude to start from
-    givenLong -- The Longitude to start From
+    longLat -- The starting point in long/lat format
     bearing -- the bearing to move the point (In Degrees)
     distance -- the distance to move the point (In Feet)
 
@@ -82,15 +83,15 @@ def BearingDistance(givenLat, givenLong, bearing, distance):
     """
 
     # Degree to Radian conversions
-    radLat = math.radians(givenLat)
-    radLong = math.radians(givenLong)
+    radLong = math.radians(longLat[0])
+    radLat = math.radians(longLat[1])
     radbear = math.radians(bearing)
 
-    # Calcuation Simplification
+    # Calculation Simplification
     kmDistance = distance * ftToKM
     angularDist = kmDistance/earthRadius
 
-    endLat = math.asin(math.sin((radLat) * math.cos(angularDist)) + (math.cos(radLat) * math.sin(angularDist) * math.cos(radbear)))
+    endLat = math.asin(math.sin(radLat) * math.cos(angularDist) + (math.cos(radLat) * math.sin(angularDist) * math.cos(radbear)))
     endLong = radLong + math.atan2(math.sin(radbear)*math.sin(angularDist)*math.cos(radLat), math.cos(angularDist)-math.sin(radLat)*math.sin(endLat))
 
     return [math.degrees(endLong), math.degrees(endLat)]

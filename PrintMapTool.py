@@ -12,7 +12,7 @@ endRow = int(input("What is the highest map row number: "))
 stepRow = int(input("How many steps between each row: "))
 startCol = int(input("What is the lowest map column number: "))
 endCol = int(input("What is the highest map column number: "))
-stepCol = int(input ("how many steps between each column: "))
+stepCol = int(input("how many steps between each column: "))
 knownMap = input("What map location is the base Lat Long: ")
 knownLat = float(input("What is the Latitude for the known upper left corner of print {} :".format(knownMap)))
 knownLong = float(input("What is the Longitude for the known upper left corner of print {} :".format(knownMap)))
@@ -26,46 +26,41 @@ rowStepsToZero = (endRow-knownRow) / stepRow
 print(colStepsToZero)
 print(rowStepsToZero)
 
-print(length)
-print(width)
 colFtToZero = int(colStepsToZero) * width
 rowFtToZero = int(rowStepsToZero) * length
 
 print(colFtToZero)
 print(rowFtToZero)
-orginArray = LatLongMath.FindOrgin(knownLat, knownLong, rowFtToZero, colFtToZero)
+originArray = LatLongMath.FindOrigin([knownLong, knownLat], rowFtToZero, colFtToZero)
 
-print(orginArray)
+print(originArray)
 
 # Create a list of what each X and Y Value label could be
-rowValues = list(range(startRow,endRow+1,stepRow))
-colValues = list(range(startCol,endCol+1,stepCol))
+rowValues = list(range(startRow, endRow+stepRow, stepRow))
+colValues = list(range(startCol, endCol+stepCol, stepCol))
 rowValues.reverse()
 
-# Build a dictionary of Row/Columns with the approprate coordinates
-mapDictionary = {}
-nextRowStart = orginArray # Start with the orginArray we figured out earlier)
-nextBoxStart = [] # This contains the uper left of th next box
-newRowFlag = False
+mapGrid = LatLongMath.generateGridMatrix(originArray, len(rowValues), len(colValues), length, width)
 
-for R in rowValues:
-    newRowFlag = True
-    nextBoxStart = nextRowStart
-    for C in colValues:
-        thisBox = LatLongMath.PrintCoords(nextBoxStart[0], nextBoxStart[1], width, length)
-        nextBoxStart = thisBox[1] # This should be the upper right corner of the given box
-        if newRowFlag:
-            nextRowStart = thisBox[2] # this should be the lower right corner of the given box
-            newRowFlag = False
-        mapDictionary[(repr(R)+repr(C))] = thisBox
+# Build a dictionary of Row/Columns with the appropriate coordinates
+mapDictionary = {}
+
+for R in range(len(rowValues)):
+    for C in range(len(colValues)):
+        thisBox = [[mapGrid[R][C], 
+                   mapGrid[R][C+1],
+                   mapGrid[R+1][C+1],
+                   mapGrid[R+1][C],
+                   mapGrid[R][C]]]
+        mapDictionary[repr(rowValues[R])+repr(colValues[C])] = thisBox
 
 print(len(mapDictionary))
 sorted(mapDictionary.keys())
 
-geoJsonFeatures=[]
-for k, v i26n mapDictionary.items():
+geoJsonFeatures = []
+for k, v in mapDictionary.items():
     thisPolygon = geojson.Polygon(v)
-    thisFeature = geojson.Feature(geometry = thisPolygon, id = k)
+    thisFeature = geojson.Feature(geometry=thisPolygon, id=k)
     geoJsonFeatures.append(thisFeature)
 
 geoJsonComplete = geojson.FeatureCollection(geoJsonFeatures)
