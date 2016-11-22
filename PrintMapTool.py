@@ -52,7 +52,7 @@ geoJsonFeatures = []
 for k, v in mapDictionary.items():
     if str(k + ".dwg") in FD.printList:
         thisPolygon = geojson.Polygon(v)
-        thisFeature = geojson.Feature(geometry=thisPolygon, id=k)
+        thisFeature = geojson.Feature(geometry=thisPolygon, id=k, properties={"id": k, "link": str(directory + "\\" + k + ".dwg")})
         geoJsonFeatures.append(thisFeature)
 
 
