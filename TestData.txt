@@ -17,3 +17,25 @@ How long (in feet) is each print: 2000
 30000
 [32.431433751261594, -86.39092935174413]
 625
+
+'''
+# This creates a list of X and Y Values
+for X in XValues:
+    for Y in YValues:
+        print(repr(X)+repr(Y))
+'''
+'''
+# Nicer Output of above
+output = ""
+mapLabels = []
+for R in rowValues:
+    for C in colValues:
+        mapLabels.append(repr(R)+repr(C))
+        output += (repr(R)+repr(C))
+        output += " "
+    output += "\n"
+
+print(output)
+print(len(mapLabels))
+print(mapLabels.count(str(knownMap)))
+'''
