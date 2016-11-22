@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Data Layer: Styling</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+      #legend-container {
+        font-family: Arial, sans-serif;
+        background: #fff;
+        padding: 10px;
+        margin: 10px;
+        border: 3px solid #000;
+      }
+      #legend-container h3 {
+        margin-top: 0;
+      }
+      .legend-color-box {
+      	height:20px;
+		width:20px;
+		border-radius:3px;
+		float:left;
+		border:1px solid black;
+		margin-right:6px;        	
+      }
+      
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAibasvw2pL4gtQGaVnsSLU0cSmI01TX2A"></script>
+    <script>
+		var map,
+			cachedGeoJson,
+			infoWindow = new google.maps.InfoWindow({
+		      content: ""
+		  	});
+
+		google.maps.event.addDomListener(window, 'load', function initialize() {
+			//create the map
+            map = new google.maps.Map(document.getElementById('map-canvas'), {
+                center: {lat: 32.3460416, lng: -86.278663},
+                zoom: 12
+            });
+			
+			// Load GeoJSON.
+            var promise = $.getJSON("GeoJsonOutput"); //same as map.data.loadGeoJson();
+			promise.then(function(data){
+				cachedGeoJson = data; //save the geojson in case we want to update its values
+				map.data.addGeoJson(cachedGeoJson);  
+			});
+		
+			//style fucntions
+	        map.data.setStyle({
+                fillOpacity: 0.0,
+                strokeWeight: 0.5
+            });
+            
+	      	//listen for click events
+			map.data.addListener('click', function(event) {
+				//show an infowindow on click   
+				infoWindow.setContent('Hi')
+                //infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Feature id = '+
+			//								event.feature.getId() +"<br/>Feature Value = Zone " + event.feature.getProperty("value") + "</div>");
+				var anchor = new google.maps.MVCObject();
+				anchor.set("position",event.latLng);
+				infoWindow.open(map,anchor);
+			});
+		});
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>
