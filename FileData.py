@@ -47,10 +47,6 @@ class FileData(object):
             self.colInts.append(c)
 
         # get our step counts
-        print("row 1 ", self.rowInts[1])
-        print("row 0 ", self.rowInts[0])
-        print("col 1 ", self.colInts[1])
-        print("col 0 ", self.colInts[0])
         self.rowStep = self.rowInts[3] - self.rowInts[2]
         self.colStep = self.colInts[1] - self.colInts[0]
 

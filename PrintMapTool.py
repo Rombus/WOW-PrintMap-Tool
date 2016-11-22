@@ -47,12 +47,14 @@ for R in range(len(rowValues)):
 
 print(len(mapDictionary))
 sorted(mapDictionary.keys())
-
 geoJsonFeatures = []
+
 for k, v in mapDictionary.items():
-    thisPolygon = geojson.Polygon(v)
-    thisFeature = geojson.Feature(geometry=thisPolygon, id=k)
-    geoJsonFeatures.append(thisFeature)
+    if str(k + ".dwg") in FD.printList:
+        thisPolygon = geojson.Polygon(v)
+        thisFeature = geojson.Feature(geometry=thisPolygon, id=k)
+        geoJsonFeatures.append(thisFeature)
+
 
 geoJsonComplete = geojson.FeatureCollection(geoJsonFeatures)
 

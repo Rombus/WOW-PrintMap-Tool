@@ -39,3 +39,10 @@ print(output)
 print(len(mapLabels))
 print(mapLabels.count(str(knownMap)))
 '''
+
+What print directory do you want to create a PrintMap for?\\wp-svr-fs01\data\Engineering\Montgomery\Maps Design
+What map location is the base Lat Long: 4435
+What is the Latitude for the known upper left corner of print 4435 :32.348738
+What is the Longitude for the known upper left corner of print 4435 :-86.361760
+How wide (in feet) is each print: 3406
+How long (in feet) is each print: 2161
