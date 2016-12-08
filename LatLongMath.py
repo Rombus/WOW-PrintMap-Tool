@@ -44,8 +44,10 @@ def generateGridMatrix(longLat, Rows, Columns, shiftInLong, ShiftinLat):
         currentColumnPoint = currentRowPoint
         for C in range(Columns):
             gridOutput[R][C] = currentColumnPoint
-            currentColumnPoint = BearingDistance(currentColumnPoint, 90, ShiftinLat)
-        currentRowPoint = BearingDistance(currentRowPoint, 180, shiftInLong)
+            #currentColumnPoint = BearingDistance(currentColumnPoint, 90, ShiftinLat)
+            currentColumnPoint = rhumbDistance(currentColumnPoint, 90, ShiftinLat)
+        #currentRowPoint = BearingDistance(currentRowPoint, 180, shiftInLong)
+        currentRowPoint = rhumbDistance(currentRowPoint, 180, shiftInLong)
 
     return gridOutput
 
@@ -61,12 +63,53 @@ def FindOrigin(longLat, shiftInLong, shiftInLat):
     """
 
     # Shift Left First
-    leftShift = BearingDistance(longLat, 270, shiftInLat)
+    # leftShift = BearingDistance(longLat, 270, shiftInLat)
+    leftShift = rhumbDistance(longLat, 270, shiftInLat)
     print(leftShift)
     # shift Up Second
-    upShift = BearingDistance(leftShift, 0, shiftInLong)
-
+    #upShift = BearingDistance(leftShift, 0, shiftInLong)
+    upShift = rhumbDistance(leftShift, 0, shiftInLong)
     return upShift
+
+
+def rhumbDistance(longLat, bearing, distance):
+    """Returns a Coordinate Array for a given bearing and distance away from
+       the given lat and long using a Rhumb Line and Mercator Projection
+       derived from http://www.movable-type.co.uk/scripts/latlong.html
+
+    Keyword Arguments:
+    longLat -- The starting point in long/lat format
+    bearing -- the bearing to move the point (In Degrees)
+    distance -- the distance to move the point (In Feet)
+
+    Return:
+    Coordinate Array in Long/Lat format
+    """
+    # Degree to Radian conversions
+    radLong = math.radians(longLat[0])
+    radLat = math.radians(longLat[1])
+    radbear = math.radians(bearing)
+
+    # Calculation Simplification
+    kmDistance = distance * ftToKM
+    angularDist = kmDistance/earthRadius
+
+
+    # Projection Calculations
+    deltaLat = angularDist * math.cos(radbear);
+    endLat = radLat + deltaLat;
+
+    deltaPsi = math.log(math.tan(endLat/2+math.pi/4)/math.tan(radLat/2+math.pi/4))
+    if(abs(deltaPsi) > 10**-12):
+        q = deltaPsi/deltaPsi
+    else:
+        q = math.cos(radLat)
+
+    deltaLong = angularDist * math.sin(radbear)/q
+    endLong = radLong + deltaLong
+
+    return [math.degrees(endLong), math.degrees(endLat)]
+
 
 
 def BearingDistance(longLat, bearing, distance):

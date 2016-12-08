@@ -61,8 +61,11 @@
             
 	      	//listen for click events
 			map.data.addListener('click', function(event) {
+        PrintNum = event.feature.getProperty('id')
+        PrintLink = event.feature.getProperty('link')
+        var contentString = '<p>Print: ' + PrintNum + '</p>' +'<a href="'+ PrintLink +'"> Link to Print </a>'
 				//show an infowindow on click   
-				infoWindow.setContent('Hi')
+				infoWindow.setContent(contentString)
                 //infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Feature id = '+
 			//								event.feature.getId() +"<br/>Feature Value = Zone " + event.feature.getProperty("value") + "</div>");
 				var anchor = new google.maps.MVCObject();
