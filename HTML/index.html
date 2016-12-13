@@ -45,7 +45,7 @@
         });
     			
         // Load GeoJSON.
-        var promise = $.getJSON("GeoJsonOutput"); //same as map.data.loadGeoJson();
+        var promise = $.getJSON("GeoJSON/Montgomery"); //same as map.data.loadGeoJson();
         promise.then(function(data){
             cachedGeoJson = data; //save the geojson in case we want to update its values
             map.data.addGeoJson(cachedGeoJson);  
